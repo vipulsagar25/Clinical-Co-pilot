@@ -1,0 +1,30 @@
+# Python basics
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE / editor configs
+.vscode/
+.idea/
+
+# Environment variables
+.env
+
+# Data files
+*.csv
+*.json
+*.db
+
+# Build / distribution
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
