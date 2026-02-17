@@ -1,35 +1,63 @@
+import os
+import sys
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+
 from app.rag_engine import ClinicalCoPilot
 
-# ---------------------------------------------
-# FastAPI App Initialization
-# ---------------------------------------------
 
+# -------------------------------------------------
+# Load Environment Variables
+# -------------------------------------------------
+load_dotenv()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+if not GROQ_API_KEY:
+    raise ValueError("❌ GROQ_API_KEY not found in .env file")
+
+
+# -------------------------------------------------
+# FastAPI Initialization
+# -------------------------------------------------
 app = FastAPI(title="Clinical Co-Pilot API")
 
-# Allow frontend (adjust in production)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Change to frontend domain in production
+    allow_origins=["*"],  # Restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ---------------------------------------------
-# Initialize Clinical Engine
-# ---------------------------------------------
 
-copilot = ClinicalCoPilot(
-    persist_dir="../storage/vector_store"
-)
+# -------------------------------------------------
+# Resolve Vector Store Path
+# -------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
+VECTOR_DIR = os.path.join(PROJECT_ROOT, "storage", "vector_store")
 
-# ---------------------------------------------
+if not os.path.exists(VECTOR_DIR):
+    raise FileNotFoundError(f"❌ Vector store not found at {VECTOR_DIR}")
+
+
+# -------------------------------------------------
+# Engine Factory (Creates New Instance)
+# -------------------------------------------------
+def create_engine():
+    return ClinicalCoPilot(
+        persist_dir=VECTOR_DIR,
+        api_key=GROQ_API_KEY,
+        debug=False
+    )
+
+
+# -------------------------------------------------
 # Request Models
-# ---------------------------------------------
-
+# -------------------------------------------------
 class AnalyzeInput(BaseModel):
     symptoms: str
 
@@ -39,48 +67,40 @@ class ChatInput(BaseModel):
     message: str
 
 
-# ---------------------------------------------
-# Stateless Clinical Query Endpoint
-# ---------------------------------------------
-
+# -------------------------------------------------
+# Stateless Endpoint
+# -------------------------------------------------
 @app.post("/analyze")
 def analyze(data: AnalyzeInput):
     """
-    Stateless endpoint.
-    Each request is processed independently.
-    Best for structured clinical input.
+    Stateless clinical reasoning.
+    No memory retained between requests.
     """
-    return copilot.process(data.symptoms)
+    engine = create_engine()
+    response = engine.process(data.symptoms)
+
+    return {
+        "response": response
+    }
 
 
-# ---------------------------------------------
-# Simple In-Memory Chat Session (UI Memory Only)
-# ---------------------------------------------
-
+# -------------------------------------------------
+# Stateful Chat Sessions (In-Memory)
+# -------------------------------------------------
 class ChatSession:
     def __init__(self):
-        self.history = []
-
-    def add(self, role: str, content):
-        self.history.append({
-            "role": role,
-            "content": content
-        })
-
-    def get_recent(self, n: int = 4):
-        return self.history[-n:]
+        self.engine = create_engine()
 
 
-# In-memory session store (resets on server restart)
+# In-memory storage (resets on restart)
 sessions = {}
 
 
 @app.post("/chat")
 def chat(data: ChatInput):
     """
-    Chat endpoint.
-    Maintains UI conversation history per user_id.
-    Clinical reasoning remains stateless for safety.
+    Stateful chat endpoint.
+    Maintains conversation memory per user_id.
     """
 
     user_id = data.user_id
@@ -91,13 +111,16 @@ def chat(data: ChatInput):
 
     session = sessions[user_id]
 
-    # Store user message
-    session.add("user", message)
+    response = session.engine.process(message)
 
-    # Clinical processing (stateless reasoning)
-    response = copilot.process(message)
+    return {
+        "response": response
+    }
 
-    # Store assistant response
-    session.add("assistant", response)
 
-    return response
+# -------------------------------------------------
+# Health Check
+# -------------------------------------------------
+@app.get("/health")
+def health():
+    return {"status": "ok"}
