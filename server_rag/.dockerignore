@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Ignore large vector stores to keep image small
+# We mount this or rebuild it during deployment
+storage/vector_store/
+data/

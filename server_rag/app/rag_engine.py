@@ -3,7 +3,7 @@ import sys
 import time
 from typing import List
 from dotenv import load_dotenv
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_groq import ChatGroq
 
@@ -38,8 +38,7 @@ class ClinicalCoPilot:
             api_key = os.getenv("GROQ_API_KEY")
 
         if not api_key:
-            print("❌ GROQ_API_KEY not set.")
-            sys.exit(1)
+            raise ValueError("❌ GROQ_API_KEY not set.")
 
         try:
             self.llm = ChatGroq(
@@ -52,10 +51,8 @@ class ClinicalCoPilot:
             print(f"❌ Error initializing Groq: {e}")
             raise
 
-        # -----------------------------
-        # Conversation Memory (Limited Window)
-        # -----------------------------
-        self.chat_history: List[str] = []
+        # Stateless model - no internal chat memory
+        pass
 
     # ---------------------------------------------------------
     # Emergency Guardrail
@@ -73,17 +70,17 @@ class ClinicalCoPilot:
     # ---------------------------------------------------------
     # Main Processing
     # ---------------------------------------------------------
-    def process(self, user_input: str) -> str:
+    def process(self, user_input: str, external_history: List[str] = None) -> str:
 
         start_time = time.time()
+        
+        if external_history is None:
+            external_history = []
 
         emergency_flags = self.check_emergency(user_input)
 
-        # Save user message
-        self.chat_history.append(f"User: {user_input}")
-
-        # Keep only last 6 messages (3 exchanges)
-        self.chat_history = self.chat_history[-6:]
+        # Keep only last 6 messages
+        recent_history = external_history[-6:]
 
         # -----------------------------
         # Retrieval
@@ -114,7 +111,7 @@ class ClinicalCoPilot:
             for d in docs
         ])
 
-        conversation_text = "\n".join(self.chat_history)
+        conversation_text = "\n".join(recent_history) + f"\nUser: {user_input}"
 
         # -----------------------------
         # Strong Grounded Prompt
@@ -171,9 +168,6 @@ Key Questions to Ask:
                 + output
             )
 
-        # Save assistant response
-        self.chat_history.append(f"Assistant: {output}")
-
         end_time = time.time()
 
         if self.debug:
@@ -182,11 +176,8 @@ Key Questions to Ask:
         return output
 
     # ---------------------------------------------------------
-    # Reset conversation
+    # Removed Reset function (Stateless)
     # ---------------------------------------------------------
-    def reset(self):
-        self.chat_history = []
-        print("🔄 Conversation reset.\n")
 
 
 # =========================================================
@@ -215,6 +206,8 @@ if __name__ == "__main__":
     print("Type '/reset' to clear memory.")
     print("Type '/exit' to quit.\n")
 
+    chat_history = []
+
     while True:
         user_input = input("You: ")
 
@@ -223,8 +216,11 @@ if __name__ == "__main__":
             break
 
         if user_input.lower() == "/reset":
-            bot.reset()
+            chat_history = []
+            print("🔄 Conversation reset.\n")
             continue
 
-        response = bot.process(user_input)
+        response = bot.process(user_input, chat_history)
+        chat_history.append(f"User: {user_input}")
+        chat_history.append(f"Assistant: {response}")
         print(f"\nAssistant:\n{response}\n")

@@ -62,10 +62,24 @@ class AnalyzeInput(BaseModel):
     symptoms: str
 
 
-class ChatInput(BaseModel):
-    user_id: str
-    message: str
+class ChatMessage(BaseModel):
+    role: str
+    content: str
 
+
+class ChatInput(BaseModel):
+    message: str
+    history: list[ChatMessage] = []
+
+
+# -------------------------------------------------
+# Global Engine Instance
+# -------------------------------------------------
+try:
+    engine = create_engine()
+except Exception as e:
+    print(f"Warning: Could not initialize engine on startup: {e}")
+    engine = None
 
 # -------------------------------------------------
 # Stateless Endpoint
@@ -76,8 +90,11 @@ def analyze(data: AnalyzeInput):
     Stateless clinical reasoning.
     No memory retained between requests.
     """
-    engine = create_engine()
-    response = engine.process(data.symptoms)
+    global engine
+    if not engine: # Lazy load if failed during startup
+        engine = create_engine()
+        
+    response = engine.process(data.symptoms, [])
 
     return {
         "response": response
@@ -85,33 +102,27 @@ def analyze(data: AnalyzeInput):
 
 
 # -------------------------------------------------
-# Stateful Chat Sessions (In-Memory)
+# Stateless Chat Sessions (Passed from Client)
 # -------------------------------------------------
-class ChatSession:
-    def __init__(self):
-        self.engine = create_engine()
-
-
-# In-memory storage (resets on restart)
-sessions = {}
-
-
 @app.post("/chat")
 def chat(data: ChatInput):
     """
-    Stateful chat endpoint.
-    Maintains conversation memory per user_id.
+    Stateless chat endpoint.
+    Conversation memory passed from client.
     """
+    global engine
+    if not engine: # Lazy load if failed during startup
+        engine = create_engine()
 
-    user_id = data.user_id
     message = data.message
+    
+    # Format history as strings
+    formatted_history = []
+    for msg in data.history:
+        role_label = "User" if msg.role == "user" else "Assistant"
+        formatted_history.append(f"{role_label}: {msg.content}")
 
-    if user_id not in sessions:
-        sessions[user_id] = ChatSession()
-
-    session = sessions[user_id]
-
-    response = session.engine.process(message)
+    response = engine.process(message, formatted_history)
 
     return {
         "response": response
