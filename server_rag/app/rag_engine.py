@@ -36,7 +36,7 @@ HISTORY_WINDOW       = 6      # last N messages to include in prompt
 CHUNK_CHAR_LIMIT     = 800    # max chars per retrieved chunk
 MAX_RESPONSE_TOKENS  = 1024   # prevents LLM response truncation
 TOP_K_RESULTS        = 5      # chunks per retrieval pass
-SIMILARITY_THRESHOLD = 1.0    # ChromaDB L2 distance cutoff (lower = better)
+SIMILARITY_THRESHOLD = 0.5    # Qdrant cosine similarity threshold (0-1, higher = stricter)
 
 # Fuzzy match threshold — 0-100, higher = stricter
 # 82 catches common misspellings (convulsoin, seziure) without
