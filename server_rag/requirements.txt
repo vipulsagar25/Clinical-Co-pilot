@@ -2,25 +2,25 @@
 # Python 3.11+
 
 # Core API Framework
-fastapi==0.116.1
+fastapi==0.115.12
 uvicorn==0.35.0
-pydantic==2.6.4
-pydantic-settings==2.2.1
+pydantic==2.11.3
+pydantic-settings==2.8.1
 python-multipart==0.0.20
 
 # Environment & Configuration
 python-dotenv==1.1.1
 
 # LangChain RAG Stack
-langchain-core==1.2.13
-langchain-community==0.4.1
-langchain-groq==1.1.2
+langchain-core==0.3.58
+langchain-community==0.3.24
+langchain-groq==0.3.2
 
 # Vector Database
-qdrant-client==1.7.3
+qdrant-client==1.13.3
 
 # LLM Provider
-groq==0.37.1
+groq==0.24.0
 
 # HTTP & Async
 aiohttp==3.12.14
