@@ -1,5 +1,4 @@
-# Clinical Co-pilot Backend - Python Dependencies
-# Python 3.11+
+# Clinical Co-pilot Backend — Python 3.11+
 
 # Core API Framework
 fastapi==0.115.12
@@ -14,13 +13,13 @@ python-dotenv==1.1.1
 # LangChain RAG Stack
 langchain-core==0.3.58
 langchain-community==0.3.24
-langchain-groq==0.3.2
+langchain-groq==1.1.2
 
 # Vector Database
 qdrant-client==1.13.3
 
 # LLM Provider
-groq==0.24.0
+groq==0.28.0
 
 # HTTP & Async
 aiohttp==3.12.14
