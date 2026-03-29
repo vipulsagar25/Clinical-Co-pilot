@@ -36,7 +36,7 @@ HISTORY_WINDOW       = 6      # last N messages to include in prompt
 CHUNK_CHAR_LIMIT     = 800    # max chars per retrieved chunk
 MAX_RESPONSE_TOKENS  = 1024   # prevents LLM response truncation
 TOP_K_RESULTS        = 5      # chunks per retrieval pass
-SIMILARITY_THRESHOLD = 0.5    # Qdrant cosine similarity threshold (0-1, higher = stricter)
+DISTANCE_THRESHOLD   = 0.5    # Qdrant distance threshold (lower = better match, keep <= 0.5)
 
 # Fuzzy match threshold — 0-100, higher = stricter
 # 82 catches common misspellings (convulsoin, seziure) without
@@ -415,7 +415,7 @@ def detect_doc_conflicts(docs) -> Optional[str]:
 # Main class
 # -------------------------------------------------------------------
 class ClinicalCoPilot:
-    def __init__(self, persist_dir: str = None, api_key: str = None, debug: bool = True):
+    def __init__(self, api_key: str = None, debug: bool = True):
         print("Initializing Clinical Co-Pilot with Qdrant backend...")
         self.debug = debug
 
@@ -508,7 +508,7 @@ class ClinicalCoPilot:
         all_results = sorted(seen.values(), key=lambda x: x[1])
 
         # Score-ranked filtering with fallback
-        docs = [doc for doc, score in all_results if score <= SIMILARITY_THRESHOLD]
+        docs = [doc for doc, score in all_results if score <= DISTANCE_THRESHOLD]
         if not docs:
             docs = [doc for doc, _ in all_results[:3]]
         docs = docs[:5]

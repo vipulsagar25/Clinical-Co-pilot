@@ -1,11 +1,12 @@
 import os
 import sys
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from ..app.rag_engine import ClinicalCoPilot
+from app.rag_engine import ClinicalCoPilot
 
 
 # -------------------------------------------------
@@ -20,9 +21,19 @@ if not GROQ_API_KEY:
 
 
 # -------------------------------------------------
-# FastAPI Initialization
+# FastAPI Initialization with Lifespan
 # -------------------------------------------------
-app = FastAPI(title="Clinical Co-Pilot API")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize engine on startup, cleanup on shutdown."""
+    app.state.engine = ClinicalCoPilot(
+        api_key=GROQ_API_KEY,
+        debug=False
+    )
+    yield
+    # Cleanup if needed
+
+app = FastAPI(title="Clinical Co-Pilot API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,16 +42,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# -------------------------------------------------
-# Engine Factory (Creates New Instance)
-# -------------------------------------------------
-def create_engine():
-    return ClinicalCoPilot(
-        api_key=GROQ_API_KEY,
-        debug=False
-    )
 
 
 # -------------------------------------------------
@@ -61,47 +62,15 @@ class ChatInput(BaseModel):
 
 
 # -------------------------------------------------
-# Global Engine Instance
-# -------------------------------------------------
-try:
-    engine = create_engine()
-except Exception as e:
-    print(f"Warning: Could not initialize engine on startup: {e}")
-    engine = None
-
-# -------------------------------------------------
-# Stateless Endpoint
-# -------------------------------------------------
-@app.post("/analyze")
-def analyze(data: AnalyzeInput):
-    """
-    Stateless clinical reasoning.
-    No memory retained between requests.
-    """
-    global engine
-    if not engine: # Lazy load if failed during startup
-        engine = create_engine()
-        
-    response = engine.process(data.symptoms, [])
-
-    return {
-        "response": response
-    }
-
-
-# -------------------------------------------------
-# Stateless Chat Sessions (Passed from Client)
+# Stateless Chat Endpoint (Conversation via Client)
 # -------------------------------------------------
 @app.post("/chat")
-def chat(data: ChatInput):
+def chat(request: Request, data: ChatInput):
     """
-    Stateless chat endpoint.
-    Conversation memory passed from client.
+    Clinical reasoning endpoint.
+    Conversation memory passed from client (stateless from server perspective).
     """
-    global engine
-    if not engine: # Lazy load if failed during startup
-        engine = create_engine()
-
+    engine = request.app.state.engine
     message = data.message
     
     # Format history as strings for the RAG engine
