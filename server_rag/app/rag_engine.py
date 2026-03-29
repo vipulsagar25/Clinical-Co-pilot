@@ -21,9 +21,10 @@ import json
 import time
 from typing import List, Dict, Optional, Tuple
 from dotenv import load_dotenv
-from langchain_chroma import Chroma
+from langchain_community.vectorstores import Qdrant
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_groq import ChatGroq
+from qdrant_client import QdrantClient
 from rapidfuzz import fuzz, process as fuzz_process
 
 load_dotenv()
@@ -414,19 +415,34 @@ def detect_doc_conflicts(docs) -> Optional[str]:
 # Main class
 # -------------------------------------------------------------------
 class ClinicalCoPilot:
-    def __init__(self, persist_dir: str, api_key: str = None, debug: bool = True):
-        print(f"Loading Clinical Brain from: {persist_dir}")
+    def __init__(self, persist_dir: str = None, api_key: str = None, debug: bool = True):
+        print("Initializing Clinical Co-Pilot with Qdrant backend...")
         self.debug = debug
 
+        # Get Qdrant credentials from environment
+        qdrant_url = os.getenv("QDRANT_URL")
+        qdrant_api_key = os.getenv("QDRANT_API_KEY")
+
+        if not qdrant_url or not qdrant_api_key:
+            raise ValueError("❌ QDRANT_URL or QDRANT_API_KEY not found in .env file")
+
         try:
-            self.db = Chroma(
-                collection_name="imci_handbook",
-                persist_directory=persist_dir,
-                embedding_function=FastEmbedEmbeddings()
+            # Initialize Qdrant client
+            client = QdrantClient(
+                url=qdrant_url,
+                api_key=qdrant_api_key,
             )
-            print("✓ Vector database loaded")
+            print("✓ Connected to Qdrant cloud")
+
+            # Initialize vectorstore with Qdrant
+            self.db = Qdrant(
+                client=client,
+                collection_name="imci_handbook",
+                embeddings=FastEmbedEmbeddings()
+            )
+            print("✓ Qdrant vectorstore initialized (imci_handbook collection)")
         except Exception as e:
-            print(f"Error loading vector database: {e}")
+            print(f"❌ Error initializing Qdrant: {e}")
             raise
 
         if api_key is None:
@@ -629,16 +645,6 @@ Key Questions to Ask:
 # =========================================================
 if __name__ == "__main__":
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    persist_dir = os.path.abspath(
-        os.path.join(script_dir, "..", "storage", "vector_store")
-    )
-
-    if not os.path.exists(persist_dir):
-        print(f"Vector store not found at {persist_dir}")
-        print("Run: python ../builders/build_vector_db.py")
-        sys.exit(1)
-
     groq_api_key = os.getenv("GROQ_API_KEY")
     if not groq_api_key:
         print("Set your Groq API key:")
@@ -646,7 +652,15 @@ if __name__ == "__main__":
         print("  $env:GROQ_API_KEY='your-key'         # Windows PowerShell")
         sys.exit(1)
 
-    bot = ClinicalCoPilot(persist_dir, api_key=groq_api_key, debug=True)
+    qdrant_url = os.getenv("QDRANT_URL")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+    if not qdrant_url or not qdrant_api_key:
+        print("Set your Qdrant credentials:")
+        print("  QDRANT_URL (e.g., https://xxx.cloud.qdrant.io)")
+        print("  QDRANT_API_KEY")
+        sys.exit(1)
+
+    bot = ClinicalCoPilot(debug=True)
     print("\nCommands: /reset — clear history | /exit — quit\n")
 
     chat_history = []

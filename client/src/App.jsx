@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { Send, Activity, Stethoscope, AlertTriangle, User, Bot, Loader2 } from 'lucide-react';
+import { Send, Activity, Stethoscope, AlertTriangle, User, Bot, Loader2, Github } from 'lucide-react';
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -39,10 +39,9 @@ function App() {
 
     try {
       // Send chat request
-      // We'll pass user_id = 'demo_user' for now. We can handle actual state tracking via API later
       const response = await axios.post(`${API_BASE_URL}/chat`, {
-        user_id: 'demo_user',
-        message: userMessage.content
+        message: userMessage.content,
+        history: messages.filter(m => m.role === 'user' || m.role === 'assistant')
       });
 
       setMessages(prev => [
@@ -84,17 +83,28 @@ function App() {
           </div>
         </div>
 
-        <button
-          onClick={clearChat}
-          className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
-        >
-          Clear Chat
-        </button>
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <a
+            href="https://github.com/vipulsagar25/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-2 text-slate-600 hover:bg-slate-100 rounded-md transition-colors" 
+            title="Developer GitHub"
+          >
+            <Github size={20} />
+          </a>
+          <button
+            onClick={clearChat}
+            className="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors"
+          >
+            Clear Chat
+          </button>
+        </div>
       </header>
 
       {/* Main Chat Area */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full scroll-smooth">
-        <div className="space-y-6 flex flex-col pb-4">
+      <main className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 w-full scroll-smooth">
+        <div className="space-y-4 sm:space-y-6 flex flex-col pb-4 w-full">
 
           {messages.map((msg, index) => {
             const isUser = msg.role === 'user';
@@ -112,7 +122,7 @@ function App() {
                 </div>
 
                 {/* Message Bubble */}
-                <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl p-5 shadow-sm ${isUser
+                <div className={`max-w-xs sm:max-w-sm md:max-w-2xl lg:max-w-3xl rounded-2xl p-3 sm:p-5 shadow-sm ${isUser
                     ? 'bg-indigo-600 text-white rounded-tr-sm'
                     : isEmergency
                       ? 'bg-red-50 text-red-900 border border-red-200 rounded-tl-sm ring-1 ring-red-100'
@@ -153,10 +163,10 @@ function App() {
       </main>
 
       {/* Input Area */}
-      <footer className="bg-white border-t border-slate-200 p-4 sticky bottom-0 z-10">
-        <div className="max-w-4xl mx-auto flex items-end gap-3 rounded-xl bg-slate-50 border border-slate-200 focus-within:ring-2 focus-within:ring-indigo-500/50 focus-within:border-indigo-500 p-2 shadow-inner transition-all">
+      <footer className="bg-white border-t border-slate-200 p-2 sm:p-4 sticky bottom-0 z-10 w-full">
+        <div className="flex items-end gap-2 sm:gap-3 rounded-xl bg-slate-50 border border-slate-200 focus-within:ring-2 focus-within:ring-indigo-500/50 focus-within:border-indigo-500 p-2 shadow-inner transition-all">
 
-          <div className="p-2 text-slate-400">
+          <div className="p-2 text-slate-400 hidden sm:block">
             <Activity size={20} />
           </div>
 
@@ -169,8 +179,8 @@ function App() {
                 handleSendMessage(e);
               }
             }}
-            placeholder="Describe the patient's symptoms (e.g., 2 year old with fever and cough)..."
-            className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-3 outline-none text-slate-800 placeholder:text-slate-400 max-h-32 min-h-12"
+            placeholder="Describe symptoms (e.g., 2 year old with fever and cough)..."
+            className="flex-1 bg-transparent border-0 focus:ring-0 resize-none py-2 sm:py-3 px-2 outline-none text-slate-800 placeholder:text-slate-400 text-sm sm:text-base max-h-32 min-h-10 sm:min-h-12"
             rows={1}
             disabled={isLoading}
           />
@@ -178,12 +188,12 @@ function App() {
           <button
             onClick={handleSendMessage}
             disabled={isLoading || !inputMessage.trim()}
-            className="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm mb-1"
+            className="p-2 sm:p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm flex-shrink-0"
           >
             <Send size={18} />
           </button>
         </div>
-        <div className="text-center mt-3 text-xs text-slate-400 font-medium pt-1">
+        <div className="text-center mt-2 text-xs text-slate-400 font-medium pt-1 px-2">
           Medical Assistant 1.0 • For clinical decision support only
         </div>
       </footer>

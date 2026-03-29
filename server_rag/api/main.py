@@ -34,22 +34,10 @@ app.add_middleware(
 
 
 # -------------------------------------------------
-# Resolve Vector Store Path
-# -------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, ".."))
-VECTOR_DIR = os.path.join(PROJECT_ROOT, "storage", "vector_store")
-
-if not os.path.exists(VECTOR_DIR):
-    raise FileNotFoundError(f"❌ Vector store not found at {VECTOR_DIR}")
-
-
-# -------------------------------------------------
 # Engine Factory (Creates New Instance)
 # -------------------------------------------------
 def create_engine():
     return ClinicalCoPilot(
-        persist_dir=VECTOR_DIR,
         api_key=GROQ_API_KEY,
         debug=False
     )
@@ -116,7 +104,7 @@ def chat(data: ChatInput):
 
     message = data.message
     
-    # Format history as strings
+    # Format history as strings for the RAG engine
     formatted_history = []
     for msg in data.history:
         role_label = "User" if msg.role == "user" else "Assistant"
