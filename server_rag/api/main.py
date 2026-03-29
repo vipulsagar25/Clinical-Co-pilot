@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-from app.rag_engine import ClinicalCoPilot
+from ..app.rag_engine import ClinicalCoPilot
 
 
 # -------------------------------------------------

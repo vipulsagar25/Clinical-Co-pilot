@@ -93,7 +93,7 @@ function App() {
       </header>
 
       {/* Main Chat Area */}
-      <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full max-w-4xl mx-auto scroll-smooth">
+      <main className="flex-1 overflow-y-auto p-4 md:p-6 w-full scroll-smooth">
         <div className="space-y-6 flex flex-col pb-4">
 
           {messages.map((msg, index) => {
