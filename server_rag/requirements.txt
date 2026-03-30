@@ -1,6 +1,5 @@
 # Clinical Co-pilot Backend — Python 3.11+
-# Python Version: 3.11.9 (pre-built wheels; Python 3.14+ not yet supported by pydantic-core, rapidfuzz, aiohttp)
-# Runtime: Use runtime.txt to pin Python version for Render deployment
+# All LangChain packages pinned to the stable 1.x ecosystem
 
 # Core API Framework
 fastapi==0.115.12
@@ -12,9 +11,9 @@ python-multipart==0.0.20
 # Environment & Configuration
 python-dotenv==1.1.1
 
-# LangChain RAG Stack
-langchain-core==0.3.59
-langchain-community==0.3.24
+# LangChain RAG Stack (all 1.x ecosystem)
+langchain-core==1.2.23
+langchain-community==0.3.31
 langchain-groq==1.1.2
 
 # Vector Database
