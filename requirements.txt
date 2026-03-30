@@ -1,6 +1,9 @@
 # Clinical Co-pilot Master Requirements File
 # This file is used by deployment platforms like Render
 # Install with: pip install -r requirements.txt
+# 
+# Python Version: 3.11+ (pre-built wheels; Python 3.14+ not yet supported by all dependencies)
+# Use runtime.txt or .python-version to pin Python 3.11.9
 
 # Core API Framework
 fastapi==0.116.1
