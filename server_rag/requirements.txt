@@ -21,7 +21,7 @@ langchain-groq==1.1.2
 qdrant-client==1.13.3
 
 # LLM Provider
-groq==0.28.0
+groq==0.30.0
 
 # HTTP & Async
 aiohttp==3.12.14
