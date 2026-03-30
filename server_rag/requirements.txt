@@ -1,26 +1,24 @@
 # Clinical Co-pilot Backend — Python 3.11+
-# All LangChain packages pinned to the stable 1.x ecosystem
 
 # Core API Framework
 fastapi==0.115.12
 uvicorn==0.35.0
 pydantic==2.11.3
-pydantic-settings==2.8.1
 python-multipart==0.0.20
 
 # Environment & Configuration
 python-dotenv==1.1.1
 
-# LangChain RAG Stack (all 1.x ecosystem)
-langchain-core==1.2.23
-langchain-community==0.3.31
+# LangChain RAG Stack — let pip resolve compatible versions
+langchain-core>=1.2.8
+langchain-community>=0.3.24
 langchain-groq==1.1.2
 
 # Vector Database
 qdrant-client==1.13.3
 
-# LLM Provider
-groq==0.30.0
+# LLM Provider — let langchain-groq pick compatible groq version
+groq>=0.30.0
 
 # HTTP & Async
 aiohttp==3.12.14
