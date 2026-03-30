@@ -1,4 +1,6 @@
 # Clinical Co-pilot Backend — Python 3.11+
+# Python Version: 3.11.9 (pre-built wheels; Python 3.14+ not yet supported by pydantic-core, rapidfuzz, aiohttp)
+# Runtime: Use runtime.txt to pin Python version for Render deployment
 
 # Core API Framework
 fastapi==0.115.12
