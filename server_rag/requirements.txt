@@ -13,7 +13,7 @@ python-multipart==0.0.20
 python-dotenv==1.1.1
 
 # LangChain RAG Stack
-langchain-core==0.3.58
+langchain-core==0.3.59
 langchain-community==0.3.24
 langchain-groq==1.1.2
 
