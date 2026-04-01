@@ -210,7 +210,7 @@ function App() {
             <div className="clinical-section min-w-[140px]">
               <div className="clinical-header">Risk Level</div>
               <div className={`risk-level-pill ${sections['Risk Level'].toLowerCase().includes('high') ? 'risk-high' :
-                  sections['Risk Level'].toLowerCase().includes('moderate') ? 'risk-moderate' : 'risk-low'
+                sections['Risk Level'].toLowerCase().includes('moderate') ? 'risk-moderate' : 'risk-low'
                 }`}>
                 {sections['Risk Level'].split('—')[0].trim()}
               </div>
@@ -223,7 +223,7 @@ function App() {
               <div className="flex items-center gap-3">
                 <div className="confidence-bar-container">
                   <div className={`confidence-fill ${sections.Confidence.toLowerCase().includes('high') ? 'confidence-high' :
-                      sections.Confidence.toLowerCase().includes('medium') ? 'confidence-medium' : 'confidence-low'
+                    sections.Confidence.toLowerCase().includes('medium') ? 'confidence-medium' : 'confidence-low'
                     }`} />
                 </div>
                 <span className="text-[11px] font-bold text-slate-500 uppercase">{sections.Confidence.split('—')[0].trim()}</span>
@@ -283,14 +283,13 @@ function App() {
           <div className="min-w-0 pr-2">
             <h1 className="text-[14px] md:text-[16px] font-bold text-slate-900 leading-tight truncate">Clinical Co-pilot</h1>
             <span className="text-[10px] md:text-[12px] font-medium text-slate-500 flex items-center gap-1.5 truncate">
-              <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${
-                backendStatus === 'online' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
-                backendStatus === 'waking_up' ? 'bg-amber-500 animate-pulse' :
-                backendStatus === 'offline' ? 'bg-red-500' : 'bg-slate-300 animate-pulse'
-              }`}></span>
-              {backendStatus === 'online' ? 'Engine Ready' : 
-               backendStatus === 'waking_up' ? 'Waking Up...' : 
-               backendStatus === 'offline' ? 'System Offline' : 'Checking Status...'}
+              <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${backendStatus === 'online' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                  backendStatus === 'waking_up' ? 'bg-amber-500 animate-pulse' :
+                    backendStatus === 'offline' ? 'bg-red-500' : 'bg-slate-300 animate-pulse'
+                }`}></span>
+              {backendStatus === 'online' ? 'Engine Ready' :
+                backendStatus === 'waking_up' ? 'Waking Up...' :
+                  backendStatus === 'offline' ? 'System Offline' : 'Checking Status...'}
             </span>
           </div>
         </div>
@@ -306,7 +305,7 @@ function App() {
           )}
           <div className="hidden sm:block w-[1px] h-6 bg-slate-200 mx-1 md:mx-2"></div>
           <a
-            href="https://github.com/vipulsagar25"
+            href="https://github.com/vipulsagar25/Clinical-Co-pilot"
             target="_blank"
             rel="noopener noreferrer"
             title="Developer Hub"
