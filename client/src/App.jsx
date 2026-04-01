@@ -228,10 +228,10 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen max-w-full overflow-hidden bg-[var(--background)]">
+    <div className="flex flex-col min-h-[100dvh] bg-[var(--background)]">
       
       {/* Navbar */}
-      <header className="bg-white py-2 md:py-3 px-4 md:px-6 flex items-center justify-between border-b border-slate-200 z-10 shadow-sm shrink-0 w-full">
+      <header className="fixed top-0 left-0 right-0 bg-white py-2 md:py-3 px-4 md:px-6 flex items-center justify-between border-b border-slate-200 z-50 shadow-sm w-full">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <div className="w-8 h-8 md:w-10 md:h-10 shrink-0 bg-white border border-slate-200 rounded-lg md:rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
             <img src="/logo1.png" alt="Clinical Co-pilot Logo" className="w-full h-full object-contain p-0.5 md:p-1" />
@@ -267,8 +267,8 @@ function App() {
       </header>
 
       {/* Chat Body */}
-      <main className="chat-area flex flex-col">
-        <div className="flex flex-col gap-2 max-w-5xl mx-auto w-full pb-8">
+      <main className="chat-area flex flex-col pt-[70px] md:pt-[80px] pb-[130px] w-full max-w-full relative">
+        <div className="flex flex-col gap-2 max-w-5xl mx-auto w-full">
           
           {/* Welcome State */}
           {messages.length === 0 && (
@@ -335,7 +335,7 @@ function App() {
       </main>
 
       {/* Input Bar */}
-      <footer className="bg-white px-4 md:px-8 py-4 border-t border-slate-200 shadow-[0_-4px_20px_-15px_rgba(0,0,0,0.1)]">
+      <footer className="fixed bottom-0 left-0 right-0 bg-white px-4 md:px-8 py-4 border-t border-slate-200 shadow-[0_-4px_20px_-15px_rgba(0,0,0,0.1)] z-50">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           <form onSubmit={handleSendMessage} className="w-full relative flex items-end shadow-sm border border-slate-300 rounded-2xl bg-white overflow-hidden focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all">
             <textarea
