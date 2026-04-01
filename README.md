@@ -326,6 +326,7 @@ Do not use this system to make or inform actual medical decisions without proper
 **Vipul Sagar** — Built as part of a self-directed learning journey into LLMs, RAG systems, and applied AI for healthcare.
 
 - GitHub: [@vipulsagar25](https://github.com/vipulsagar25)
+- LinkedIn: [Vipul Sagar}(www.linkedin.com/in/vipul-sagar-0264922bb)
 
 ---
 
