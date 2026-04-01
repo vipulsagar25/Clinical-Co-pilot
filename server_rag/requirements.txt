@@ -19,6 +19,8 @@ fastembed==0.5.1
 
 # Vector Database
 qdrant-client>=1.13.0
+langchain-qdrant>=0.1.0
+
 
 # LLM
 groq>=0.30.0

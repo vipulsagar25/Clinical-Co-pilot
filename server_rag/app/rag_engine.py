@@ -21,7 +21,7 @@ import json
 import time
 from typing import List, Dict, Optional, Tuple
 from dotenv import load_dotenv
-from langchain_community.vectorstores import Qdrant
+from langchain_qdrant import QdrantVectorStore
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_groq import ChatGroq
 from qdrant_client import QdrantClient
@@ -435,10 +435,10 @@ class ClinicalCoPilot:
             print("✓ Connected to Qdrant cloud")
 
             # Initialize vectorstore with Qdrant
-            self.db = Qdrant(
+            self.db = QdrantVectorStore(
                 client=client,
                 collection_name="imci_handbook",
-                embeddings=FastEmbedEmbeddings()
+                embedding=FastEmbedEmbeddings()
             )
             print("✓ Qdrant vectorstore initialized (imci_handbook collection)")
         except Exception as e:

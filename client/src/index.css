@@ -1,99 +1,105 @@
 @import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@layer base {
+  :root {
+    --background: #f8fafc; /* Clean slate background */
+    --foreground: #0f172a;
+    --primary: #2563eb; /* Professional Clinical Blue */
+    --primary-hover: #1d4ed8;
+    --user-bubble: #2563eb;
+    --user-text: #ffffff;
+    --bot-bubble: #ffffff;
+    --bot-text: #0f172a;
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-main);
+    -webkit-font-smoothing: antialiased;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+@layer components {
+  .chat-area {
+    @apply flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-4;
+    background-color: var(--background);
+  }
+
+  .bubble {
+    @apply max-w-[85%] md:max-w-[75%] p-4 rounded-2xl shadow-sm relative text-[15px] leading-relaxed transition-all;
+  }
+
+  .bubble-user {
+    @apply self-end bg-[var(--user-bubble)] text-[var(--user-text)] rounded-tr-sm ml-auto;
+  }
+
+  .bubble-bot {
+    @apply self-start bg-[var(--bot-bubble)] text-[var(--bot-text)] border border-slate-200 rounded-tl-sm mr-auto;
+  }
+
+  .bubble-time {
+    @apply text-[10px] opacity-70 mt-2 block font-medium;
+  }
+  
+  .bubble-user .bubble-time {
+    @apply text-blue-100 text-right;
+  }
+  
+  .bubble-bot .bubble-time {
+    @apply text-slate-400 text-right;
+  }
 }
 
-#root {
-  display: flex;
-  flex-direction: column;
-}
-
-:root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --transition-smooth: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body {
-  background-color: var(--background);
-  color: var(--foreground);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Smooth scroll behavior for chat area */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom scrollbar styling */
+/* Scrollbar for clean look */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 4px;
+  border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Message entrance animations */
-@keyframes slideInFromBottom {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Typography for Clinical Markdown */
+.clinical-content b, .clinical-content strong {
+  @apply font-bold;
 }
 
-@keyframes slideInFromTop {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.clinical-content p {
+  @apply mb-2 last:mb-0;
 }
 
-.message-enter {
-  animation: slideInFromBottom 0.3s ease-out;
+.clinical-content ul {
+  @apply my-2 pl-4 list-disc space-y-1;
 }
 
-.prompt-enter {
-  animation: slideInFromTop 0.3s ease-out;
+.assessment-block {
+  @apply bg-blue-50/50 border-l-4 border-blue-400 p-3 my-3 rounded-r-md text-slate-800;
 }
 
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.emergency-block {
+  @apply bg-red-50 border-l-4 border-red-500 p-3 my-3 rounded-r-md font-semibold text-red-700;
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
 }
