@@ -86,6 +86,64 @@
   @apply my-2 pl-4 list-disc space-y-1;
 }
 
+/* --- New Clinical Components --- */
+
+.clinical-section {
+  @apply mb-4 last:mb-0;
+}
+
+.clinical-header {
+  @apply text-[12px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 flex items-center gap-1.5;
+}
+
+.risk-level-pill {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold uppercase;
+}
+
+.risk-high {
+  @apply bg-red-100 text-red-700 border border-red-200;
+}
+
+.risk-moderate {
+  @apply bg-amber-100 text-amber-700 border border-amber-200;
+}
+
+.risk-low {
+  @apply bg-emerald-100 text-emerald-700 border border-emerald-200;
+}
+
+.confidence-bar-container {
+  @apply h-1.5 w-24 bg-slate-100 rounded-full overflow-hidden mt-1;
+}
+
+.confidence-fill {
+  @apply h-full transition-all duration-1000 ease-out;
+}
+
+.confidence-high { @apply bg-blue-500 w-[90%]; }
+.confidence-medium { @apply bg-blue-300 w-[60%]; }
+.confidence-low { @apply bg-slate-300 w-[30%]; }
+
+.evidence-quote {
+  @apply italic text-slate-600 pl-3 border-l-2 border-slate-200 text-[14px] my-1;
+}
+
+.question-item {
+  @apply flex gap-2 items-start py-1 text-slate-700 font-medium;
+}
+
+.question-bullet {
+  @apply w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0;
+}
+
+.assessment-content {
+  @apply text-slate-800 font-medium leading-relaxed;
+}
+
+.action-card {
+  @apply bg-blue-50/30 border border-blue-100 p-3 rounded-xl text-blue-900 font-medium;
+}
+
 .assessment-block {
   @apply bg-blue-50/50 border-l-4 border-blue-400 p-3 my-3 rounded-r-md text-slate-800;
 }

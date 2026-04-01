@@ -85,14 +85,146 @@ function App() {
     }
   };
 
+  const parseClinicalResponse = (content) => {
+    const sections = {};
+    
+    // Extract Emergency Alert (if exists)
+    const emergencyMatch = content.match(/⚠️ DANGER SIGNS DETECTED: (.*) IMMEDIATE REFERRAL/);
+    if (emergencyMatch) {
+      sections.emergency = emergencyMatch[1];
+    }
+
+    // Split by known headers
+    const headers = [
+      'Assessment:', 
+      'Risk Level:', 
+      'Confidence:', 
+      'Recommended Action:', 
+      'Evidence:', 
+      'Key Questions to Ask:'
+    ];
+
+    let currentPos = 0;
+    headers.forEach((header, idx) => {
+      const startIdx = content.indexOf(header);
+      if (startIdx !== -1) {
+        // Find where the next header starts
+        let nextHeaderIdx = -1;
+        for (let j = idx + 1; j < headers.length; j++) {
+          const pos = content.indexOf(headers[j]);
+          if (pos !== -1 && (nextHeaderIdx === -1 || pos < nextHeaderIdx)) {
+            nextHeaderIdx = pos;
+          }
+        }
+
+        const sectionContent = nextHeaderIdx !== -1 
+          ? content.substring(startIdx + header.length, nextHeaderIdx).trim()
+          : content.substring(startIdx + header.length).trim();
+        
+        sections[header.replace(':', '')] = sectionContent;
+      }
+    });
+
+    return sections;
+  };
+
   const formatContent = (content) => {
-    if (content.includes('⚠️ DANGER SIGNS')) {
-      return <div className="emergency-block clinical-content">{content}</div>;
+    if (content.startsWith('**System Error**')) {
+      return <div className="text-red-500 font-medium">{content}</div>;
     }
-    if (content.includes('Assessment:')) {
-      return <div className="assessment-block clinical-content">{content}</div>;
+
+    const sections = parseClinicalResponse(content);
+    
+    if (Object.keys(sections).length === 0) {
+      return <div className="clinical-content whitespace-pre-wrap">{content}</div>;
     }
-    return <div className="clinical-content">{content}</div>;
+
+    return (
+      <div className="space-y-4 py-1">
+        {sections.emergency && (
+          <div className="emergency-block animate-pulse-slow">
+            <div className="flex items-center gap-2 mb-1">
+              <Activity size={16} />
+              <span>DANGER SIGNS DETECTED</span>
+            </div>
+            <p className="text-sm opacity-90">{sections.emergency}</p>
+            <p className="text-[11px] mt-2 border-t border-red-200 pt-2 uppercase tracking-tight">Immediate Referral Required</p>
+          </div>
+        )}
+
+        {sections.Assessment && (
+          <div className="clinical-section">
+            <div className="clinical-header"><Stethoscope size={14} /> Assessment</div>
+            <div className="assessment-content">{sections.Assessment}</div>
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-4 items-start">
+          {sections['Risk Level'] && (
+            <div className="clinical-section min-w-[140px]">
+              <div className="clinical-header">Risk Level</div>
+              <div className={`risk-level-pill ${
+                sections['Risk Level'].toLowerCase().includes('high') ? 'risk-high' :
+                sections['Risk Level'].toLowerCase().includes('moderate') ? 'risk-moderate' : 'risk-low'
+              }`}>
+                {sections['Risk Level'].split('—')[0].trim()}
+              </div>
+            </div>
+          )}
+
+          {sections.Confidence && (
+            <div className="clinical-section">
+              <div className="clinical-header">Retrieval Confidence</div>
+              <div className="flex items-center gap-3">
+                <div className="confidence-bar-container">
+                  <div className={`confidence-fill ${
+                    sections.Confidence.toLowerCase().includes('high') ? 'confidence-high' :
+                    sections.Confidence.toLowerCase().includes('medium') ? 'confidence-medium' : 'confidence-low'
+                  }`} />
+                </div>
+                <span className="text-[11px] font-bold text-slate-500 uppercase">{sections.Confidence.split('—')[0].trim()}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {sections['Recommended Action'] && (
+          <div className="clinical-section">
+            <div className="clinical-header">Recommended Action</div>
+            <div className="action-card">
+              {sections['Recommended Action']}
+            </div>
+          </div>
+        )}
+
+        {sections.Evidence && (
+          <div className="clinical-section border-t border-slate-100 pt-3">
+            <div className="clinical-header">Evidence & Citations</div>
+            <div className="space-y-2 mt-2">
+              {sections.Evidence.split('\n').filter(l => l.trim()).map((line, i) => (
+                <div key={i} className="evidence-quote">
+                  {line.replace(/^- /, '')}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {sections['Key Questions to Ask'] && (
+          <div className="clinical-section bg-slate-50/50 p-3 rounded-xl border border-slate-100">
+            <div className="clinical-header">Follow-up Questions</div>
+            <div className="space-y-1 mt-1">
+              {sections['Key Questions to Ask'].split('\n').filter(l => l.trim()).map((line, i) => (
+                <div key={i} className="question-item">
+                  <div className="question-bullet" />
+                  <span className="text-sm">{line.replace(/^- /, '')}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
