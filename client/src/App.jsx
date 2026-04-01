@@ -231,35 +231,37 @@ function App() {
     <div className="flex flex-col h-screen max-w-full overflow-hidden bg-[var(--background)]">
       
       {/* Navbar */}
-      <header className="bg-white py-3 px-6 flex items-center justify-between border-b border-slate-200 z-10 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
-            <img src="/logo1.png" alt="Clinical Co-pilot Logo" className="w-full h-full object-contain p-1" />
+      <header className="bg-white py-2 md:py-3 px-4 md:px-6 flex items-center justify-between border-b border-slate-200 z-10 shadow-sm shrink-0 w-full">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+          <div className="w-8 h-8 md:w-10 md:h-10 shrink-0 bg-white border border-slate-200 rounded-lg md:rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+            <img src="/logo1.png" alt="Clinical Co-pilot Logo" className="w-full h-full object-contain p-0.5 md:p-1" />
           </div>
-          <div>
-            <h1 className="text-[16px] font-bold text-slate-900 leading-tight">Clinical Co-pilot</h1>
-            <span className="text-[12px] font-medium text-blue-600 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> IMCI Engine
+          <div className="min-w-0 pr-2">
+            <h1 className="text-[14px] md:text-[16px] font-bold text-slate-900 leading-tight truncate">Clinical Co-pilot</h1>
+            <span className="text-[10px] md:text-[12px] font-medium text-blue-600 flex items-center gap-1 truncate">
+              <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-blue-500 animate-pulse"></span> IMCI Engine
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 md:gap-2 shrink-0">
           {messages.length > 0 && (
             <button 
               onClick={() => setMessages([])} 
-              className="px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1"
+              title="Clear Chat"
+              className="p-2 md:px-3 md:py-1.5 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5"
             >
-              <Trash2 size={14} /> Clear
+              <Trash2 className="w-4 h-4 md:w-3.5 md:h-3.5" /> <span className="hidden sm:inline">Clear</span>
             </button>
           )}
-          <div className="w-[1px] h-6 bg-slate-200 mx-2"></div>
+          <div className="hidden sm:block w-[1px] h-6 bg-slate-200 mx-1 md:mx-2"></div>
           <a 
             href="https://github.com/vipulsagar25" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 rounded-lg transition-all"
+            title="Developer Hub"
+            className="flex items-center gap-1.5 p-2 md:px-3 md:py-1.5 text-sm font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 rounded-lg transition-all"
           >
-            <Github size={16} /> <span className="hidden sm:inline">Developer Hub</span>
+            <Github className="w-4 h-4 md:w-4 md:h-4" /> <span className="hidden sm:inline">Developer Hub</span>
           </a>
         </div>
       </header>
