@@ -9,13 +9,13 @@
 ## 📱 App Showcase
 
 ### 🏠 Welcome Screen
-![Welcome Screen](img_readme/one.jpeg)
+![Welcome Screen](img_readme/1one.jpeg)
 
 ### 🏥 Clinical Assessment & Risk Level
-![Clinical Assessment](img_readme/two.jpeg)
+![Clinical Assessment](img_readme/2two.jpeg)
 
 ### 📚 RAG Evidence & Citations
-![Citations](img_readme/third.jpeg)
+![Citations](img_readme/3third.jpeg)
 
 ---
 
