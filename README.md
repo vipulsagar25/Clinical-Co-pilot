@@ -6,6 +6,14 @@
 
 ---
 
+## 📱 App Showcase
+
+| Welcome Screen | Clinical Assessment | RAG Evidence & Citations |
+|---|---|---|
+| ![Welcome Screen](img_readme/one.jpeg) | ![Clinical Assessment](img_readme/two.jpeg) | ![Citations](img_readme/third.jpeg) |
+
+---
+
 ## 🧠 What Is This?
 
 Clinical Co-pilot is an AI-powered clinical assistant that uses **Retrieval-Augmented Generation (RAG)** to answer medical queries grounded in the **IMCI (Integrated Management of Childhood Illness)** handbook. Instead of relying solely on a language model's parametric memory — which can hallucinate — the system retrieves relevant chunks from a curated medical knowledge base at query time, then generates a response anchored to that retrieved context.
