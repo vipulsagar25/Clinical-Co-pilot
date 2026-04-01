@@ -18,7 +18,6 @@ env/
 
 # Data files
 *.csv
-*.json
 *.db
 
 # Build / distribution

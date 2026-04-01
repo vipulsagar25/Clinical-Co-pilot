@@ -233,8 +233,8 @@ function App() {
       {/* Navbar */}
       <header className="bg-white py-3 px-6 flex items-center justify-between border-b border-slate-200 z-10 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-center text-blue-600">
-            <ShieldPlus size={22} strokeWidth={2.5} />
+          <div className="w-10 h-10 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+            <img src="/logo1.png" alt="Clinical Co-pilot Logo" className="w-full h-full object-contain p-1" />
           </div>
           <div>
             <h1 className="text-[16px] font-bold text-slate-900 leading-tight">Clinical Co-pilot</h1>
@@ -327,6 +327,7 @@ function App() {
                </div>
              </div>
           )}
+
           <div ref={messagesEndRef} className="h-4" />
         </div>
       </main>
