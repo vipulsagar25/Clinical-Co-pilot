@@ -8,9 +8,14 @@
 
 ## 📱 App Showcase
 
-| Welcome Screen | Clinical Assessment | RAG Evidence & Citations |
-|---|---|---|
-| ![Welcome Screen](img_readme/one.jpeg) | ![Clinical Assessment](img_readme/two.jpeg) | ![Citations](img_readme/third.jpeg) |
+### 🏠 Welcome Screen
+![Welcome Screen](img_readme/one.jpeg)
+
+### 🏥 Clinical Assessment & Risk Level
+![Clinical Assessment](img_readme/two.jpeg)
+
+### 📚 RAG Evidence & Citations
+![Citations](img_readme/third.jpeg)
 
 ---
 
