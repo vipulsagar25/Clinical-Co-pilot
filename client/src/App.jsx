@@ -1,18 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Send, 
-  Stethoscope, 
-  User, 
-  Loader2, 
-  Trash2, 
+import {
+  Send,
+  Stethoscope,
+  User,
+  Loader2,
+  Trash2,
   Github,
   Activity,
   ChevronRight,
   ShieldPlus
 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://clinical-co-pilot-vipul.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const SUGGESTED_SCENARIOS = [
   "2 year old with fever and fast breathing",
@@ -44,15 +44,15 @@ function App() {
   const handleSendMessage = async (e, customMessage = null) => {
     e?.preventDefault();
     const msgToProcess = customMessage || inputMessage;
-    
+
     if (!msgToProcess.trim() || isLoading) return;
 
-    const userMessage = { 
-      role: 'user', 
-      content: msgToProcess.trim(), 
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+    const userMessage = {
+      role: 'user',
+      content: msgToProcess.trim(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    
+
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsLoading(true);
@@ -65,8 +65,8 @@ function App() {
 
       setMessages(prev => [
         ...prev,
-        { 
-          role: 'assistant', 
+        {
+          role: 'assistant',
           content: response.data.response,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
@@ -74,8 +74,8 @@ function App() {
     } catch (error) {
       setMessages(prev => [
         ...prev,
-        { 
-          role: 'assistant', 
+        {
+          role: 'assistant',
           content: "⚠️ **System Error**: Failed to fetch clinical protocol. Check connection.",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
@@ -87,7 +87,7 @@ function App() {
 
   const parseClinicalResponse = (content) => {
     const sections = {};
-    
+
     // Extract Emergency Alert (if exists)
     const emergencyMatch = content.match(/⚠️ DANGER SIGNS DETECTED: (.*) IMMEDIATE REFERRAL/);
     if (emergencyMatch) {
@@ -96,11 +96,11 @@ function App() {
 
     // Split by known headers
     const headers = [
-      'Assessment:', 
-      'Risk Level:', 
-      'Confidence:', 
-      'Recommended Action:', 
-      'Evidence:', 
+      'Assessment:',
+      'Risk Level:',
+      'Confidence:',
+      'Recommended Action:',
+      'Evidence:',
       'Key Questions to Ask:'
     ];
 
@@ -117,10 +117,10 @@ function App() {
           }
         }
 
-        const sectionContent = nextHeaderIdx !== -1 
+        const sectionContent = nextHeaderIdx !== -1
           ? content.substring(startIdx + header.length, nextHeaderIdx).trim()
           : content.substring(startIdx + header.length).trim();
-        
+
         sections[header.replace(':', '')] = sectionContent;
       }
     });
@@ -134,7 +134,7 @@ function App() {
     }
 
     const sections = parseClinicalResponse(content);
-    
+
     if (Object.keys(sections).length === 0) {
       return <div className="clinical-content whitespace-pre-wrap">{content}</div>;
     }
@@ -163,10 +163,9 @@ function App() {
           {sections['Risk Level'] && (
             <div className="clinical-section min-w-[140px]">
               <div className="clinical-header">Risk Level</div>
-              <div className={`risk-level-pill ${
-                sections['Risk Level'].toLowerCase().includes('high') ? 'risk-high' :
-                sections['Risk Level'].toLowerCase().includes('moderate') ? 'risk-moderate' : 'risk-low'
-              }`}>
+              <div className={`risk-level-pill ${sections['Risk Level'].toLowerCase().includes('high') ? 'risk-high' :
+                  sections['Risk Level'].toLowerCase().includes('moderate') ? 'risk-moderate' : 'risk-low'
+                }`}>
                 {sections['Risk Level'].split('—')[0].trim()}
               </div>
             </div>
@@ -177,10 +176,9 @@ function App() {
               <div className="clinical-header">Retrieval Confidence</div>
               <div className="flex items-center gap-3">
                 <div className="confidence-bar-container">
-                  <div className={`confidence-fill ${
-                    sections.Confidence.toLowerCase().includes('high') ? 'confidence-high' :
-                    sections.Confidence.toLowerCase().includes('medium') ? 'confidence-medium' : 'confidence-low'
-                  }`} />
+                  <div className={`confidence-fill ${sections.Confidence.toLowerCase().includes('high') ? 'confidence-high' :
+                      sections.Confidence.toLowerCase().includes('medium') ? 'confidence-medium' : 'confidence-low'
+                    }`} />
                 </div>
                 <span className="text-[11px] font-bold text-slate-500 uppercase">{sections.Confidence.split('—')[0].trim()}</span>
               </div>
@@ -229,7 +227,7 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-[100dvh] bg-[var(--background)]">
-      
+
       {/* Navbar */}
       <header className="fixed top-0 left-0 right-0 bg-white py-2 md:py-3 px-4 md:px-6 flex items-center justify-between border-b border-slate-200 z-50 shadow-sm w-full">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
@@ -245,8 +243,8 @@ function App() {
         </div>
         <div className="flex items-center gap-1 md:gap-2 shrink-0">
           {messages.length > 0 && (
-            <button 
-              onClick={() => setMessages([])} 
+            <button
+              onClick={() => setMessages([])}
               title="Clear Chat"
               className="p-2 md:px-3 md:py-1.5 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5"
             >
@@ -254,9 +252,9 @@ function App() {
             </button>
           )}
           <div className="hidden sm:block w-[1px] h-6 bg-slate-200 mx-1 md:mx-2"></div>
-          <a 
-            href="https://github.com/vipulsagar25" 
-            target="_blank" 
+          <a
+            href="https://github.com/vipulsagar25"
+            target="_blank"
             rel="noopener noreferrer"
             title="Developer Hub"
             className="flex items-center gap-1.5 p-2 md:px-3 md:py-1.5 text-sm font-medium text-slate-600 bg-slate-50 hover:bg-slate-100 hover:text-slate-900 border border-slate-200 rounded-lg transition-all"
@@ -269,7 +267,7 @@ function App() {
       {/* Chat Body */}
       <main className="chat-area flex flex-col pt-[70px] md:pt-[80px] pb-[130px] w-full max-w-full relative">
         <div className="flex flex-col gap-2 max-w-5xl mx-auto w-full">
-          
+
           {/* Welcome State */}
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center py-16 md:py-24 text-center animate-in fade-in duration-500">
@@ -280,7 +278,7 @@ function App() {
               <p className="text-sm text-slate-500 max-w-md mt-3 mx-auto leading-relaxed">
                 An AI-driven assistant configured for the Integrated Management of Childhood Illnesses (IMCI).
               </p>
-              
+
               <div className="w-full max-w-2xl mt-12 grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
                 {SUGGESTED_SCENARIOS.map((scenario, idx) => (
                   <button
@@ -299,35 +297,34 @@ function App() {
           )}
 
           {messages.map((msg, idx) => (
-             <div 
-               key={idx} 
-               className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
-             >
-               <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-2 ${
-                 msg.role === 'user' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white border border-slate-200 shadow-sm text-blue-600'
-               }`}>
-                 {msg.role === 'user' ? <User size={16} /> : <Stethoscope size={16} />}
-               </div>
-               
-               <div className={`bubble ${msg.role === 'user' ? 'bubble-user' : 'bubble-bot'}`}>
-                 {formatContent(msg.content)}
-                 <span className="bubble-time">{msg.timestamp}</span>
-               </div>
-             </div>
+            <div
+              key={idx}
+              className={`flex gap-3 animate-in fade-in slide-in-from-bottom-2 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-2 ${msg.role === 'user' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white border border-slate-200 shadow-sm text-blue-600'
+                }`}>
+                {msg.role === 'user' ? <User size={16} /> : <Stethoscope size={16} />}
+              </div>
+
+              <div className={`bubble ${msg.role === 'user' ? 'bubble-user' : 'bubble-bot'}`}>
+                {formatContent(msg.content)}
+                <span className="bubble-time">{msg.timestamp}</span>
+              </div>
+            </div>
           ))}
 
           {isLoading && (
-             <div className="flex gap-3 animate-in fade-in">
-               <div className="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm text-blue-600 flex items-center justify-center shrink-0 mt-2">
-                 <Stethoscope size={16} />
-               </div>
-               <div className="bubble bubble-bot animate-pulse max-w-[150px]">
-                 <div className="flex items-center gap-2 py-1">
-                   <Loader2 size={16} className="animate-spin text-blue-500" />
-                   <span className="text-slate-500 font-medium text-sm">Analyzing...</span>
-                 </div>
-               </div>
-             </div>
+            <div className="flex gap-3 animate-in fade-in">
+              <div className="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm text-blue-600 flex items-center justify-center shrink-0 mt-2">
+                <Stethoscope size={16} />
+              </div>
+              <div className="bubble bubble-bot animate-pulse max-w-[150px]">
+                <div className="flex items-center gap-2 py-1">
+                  <Loader2 size={16} className="animate-spin text-blue-500" />
+                  <span className="text-slate-500 font-medium text-sm">Analyzing...</span>
+                </div>
+              </div>
+            </div>
           )}
 
           <div ref={messagesEndRef} className="h-4" />
@@ -343,28 +340,27 @@ function App() {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => {
-                 if(e.key === 'Enter' && !e.shiftKey) {
-                   e.preventDefault();
-                   handleSendMessage();
-                 }
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
               }}
               placeholder="Detail patient symptoms and history..."
               className="w-full bg-transparent border-0 px-5 py-4 text-[15px] focus:ring-0 resize-none min-h-[56px] max-h-32 text-slate-800 placeholder:text-slate-400"
               rows={1}
               disabled={isLoading}
             />
-            <button 
+            <button
               type="submit"
               disabled={!inputMessage.trim() || isLoading}
-              className={`absolute right-2 bottom-2 p-2.5 rounded-xl transition-all flex items-center justify-center ${
-                inputMessage.trim() ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md' : 'bg-slate-100 text-slate-400'
-              }`}
+              className={`absolute right-2 bottom-2 p-2.5 rounded-xl transition-all flex items-center justify-center ${inputMessage.trim() ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-md' : 'bg-slate-100 text-slate-400'
+                }`}
             >
               <Send size={18} />
             </button>
           </form>
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-3">
-             Not a replacement for clinical judgment / Validation Required
+            Not a replacement for clinical judgment / Validation Required
           </span>
         </div>
       </footer>
