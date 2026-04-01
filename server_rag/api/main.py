@@ -10,9 +10,11 @@ from app.rag_engine import ClinicalCoPilot
 
 
 # -------------------------------------------------
-# Load Environment Variables
+# Load Environment Variables from Project Root
 # -------------------------------------------------
-load_dotenv()
+# Navigate up to the project root from server_rag/api/main.py
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
+load_dotenv(os.path.join(ROOT_DIR, ".env"))
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 

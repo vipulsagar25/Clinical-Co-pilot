@@ -12,7 +12,10 @@ import {
   ShieldPlus
 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Clean environment variable from quotes/trailing slashes
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || '')
+  .replace(/\/$/, '')
+  .replace(/^"(.*)"$/, '$1');
 
 const SUGGESTED_SCENARIOS = [
   "2 year old with fever and fast breathing",
@@ -29,6 +32,7 @@ function App() {
 
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'online', 'offline', 'waking_up', 'checking'
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -40,6 +44,31 @@ function App() {
     scrollToBottom();
     localStorage.setItem('clinical_chat_v4', JSON.stringify(messages));
   }, [messages]);
+
+  // Health check on mount
+  useEffect(() => {
+    const checkHealth = async (retries = 3) => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/health`, { timeout: 8000 });
+        if (response.data.status === 'ok') {
+          setBackendStatus('online');
+        }
+      } catch (error) {
+        if (error.code === 'ECONNABORTED' || !error.response) {
+          // If server is cold-starting it might just timeout
+          setBackendStatus('waking_up');
+          if (retries > 0) {
+            setTimeout(() => checkHealth(retries - 1), 5000);
+          } else {
+            setBackendStatus('offline');
+          }
+        } else {
+          setBackendStatus('offline');
+        }
+      }
+    };
+    checkHealth();
+  }, []);
 
   const handleSendMessage = async (e, customMessage = null) => {
     e?.preventDefault();
@@ -58,10 +87,26 @@ function App() {
     setIsLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/chat`, {
-        message: userMessage.content,
-        history: messages.map(m => ({ role: m.role, content: m.content }))
-      });
+      // Auto-retry once on timeout to handle cold starts
+      let response;
+      try {
+        response = await axios.post(`${API_BASE_URL}/chat`, {
+          message: userMessage.content,
+          history: messages.map(m => ({ role: m.role, content: m.content }))
+        }, { timeout: 45000 }); // Longer timeout for cold starts
+      } catch (error) {
+        if ((error.code === 'ECONNABORTED' || !error.response) && !customMessage) {
+          // Silently retry once if it was a timeout (likely waking up)
+          response = await axios.post(`${API_BASE_URL}/chat`, {
+            message: userMessage.content,
+            history: messages.map(m => ({ role: m.role, content: m.content }))
+          }, { timeout: 60000 });
+        } else {
+          throw error;
+        }
+      }
+
+      setBackendStatus('online');
 
       setMessages(prev => [
         ...prev,
@@ -72,11 +117,12 @@ function App() {
         }
       ]);
     } catch (error) {
+      console.error('Clinical API Connection Error:', error);
       setMessages(prev => [
         ...prev,
         {
           role: 'assistant',
-          content: "⚠️ **System Error**: Failed to fetch clinical protocol. Check connection.",
+          content: `⚠️ **System Error**: Failed to fetch clinical protocol. ${error.response ? `(Server returned ${error.response.status})` : 'Check network connectivity or backend URL configuration.'}`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -236,8 +282,15 @@ function App() {
           </div>
           <div className="min-w-0 pr-2">
             <h1 className="text-[14px] md:text-[16px] font-bold text-slate-900 leading-tight truncate">Clinical Co-pilot</h1>
-            <span className="text-[10px] md:text-[12px] font-medium text-blue-600 flex items-center gap-1 truncate">
-              <span className="w-1.5 h-1.5 shrink-0 rounded-full bg-blue-500 animate-pulse"></span> IMCI Engine
+            <span className="text-[10px] md:text-[12px] font-medium text-slate-500 flex items-center gap-1.5 truncate">
+              <span className={`w-1.5 h-1.5 shrink-0 rounded-full ${
+                backendStatus === 'online' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' :
+                backendStatus === 'waking_up' ? 'bg-amber-500 animate-pulse' :
+                backendStatus === 'offline' ? 'bg-red-500' : 'bg-slate-300 animate-pulse'
+              }`}></span>
+              {backendStatus === 'online' ? 'Engine Ready' : 
+               backendStatus === 'waking_up' ? 'Waking Up...' : 
+               backendStatus === 'offline' ? 'System Offline' : 'Checking Status...'}
             </span>
           </div>
         </div>
